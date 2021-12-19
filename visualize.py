@@ -10,7 +10,6 @@ There are some adjustable parameters in this script
 
 import json
 import argparse
-import numpy as np
 import subprocess as sp
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -20,7 +19,7 @@ parser.add_argument("json", help="Spectrum JSON file")
 parser.add_argument("audio", help="Audio file (mp3 or wav)")
 parser.add_argument("-x", help="x-axis range (default auto)", type=float, nargs=2, metavar=('min', 'max'))
 parser.add_argument("-y", help="y-axis range (default auto)", type=float, nargs=2, metavar=('min', 'max'))
-parser.add_argument("-d", help="DPI of the output video (default 80)", type=int, nargs=1, metavar="dpi")
+parser.add_argument("-d", help="DPI of the output video (default 100)", type=int, nargs=1, metavar="dpi")
 parser.add_argument("-w", help="Changes ratio to 16:9 (default 4:3)", default=False, action="store_true")
 parser.add_argument("-f", help="FPS of the output video (default 20)", type=int, nargs=1, metavar="fps")
 parser.add_argument("-t", help="Hides plot title", default=False, action="store_true")
@@ -31,7 +30,7 @@ parser.add_argument("-c", help="Color of plot lines (default dependant on theme)
 parser.add_argument("-th", help="Graph theme (default dark)", type=str, nargs=1, metavar="dark/light")
 args = parser.parse_args()
 
-dpi = 80 # DPI
+dpi = 100 # DPI
 if args.d is not None:
     dpi = args.d[0]
 
@@ -60,7 +59,7 @@ with open(args.json) as file:
 def maxMag(): # get the max magnitude estimate
     mag = 0
 
-    for frame in range(0, len(data["channel_1"])-1):
+    for frame in range(0, len(data["channel_1"])):
         for sample in data["channel_1"][frame]["spectrum"]:
             if abs(sample) > mag:
                 mag = abs(sample)
@@ -71,7 +70,7 @@ def maxFreq(): # get the max frequency estimate
     freq = 0
     mag = maxMag()
 
-    for frame in range(0, len(data["channel_1"])-1):
+    for frame in range(0, len(data["channel_1"])):
         for sample in range(len(data["freqs"])):
             if abs(data["channel_1"][frame]["spectrum"][sample]) > mag*0.15: # exclude anything below the 5% percentile of the average mag
                 if data["freqs"][sample] > freq:
@@ -124,7 +123,7 @@ def init():
     return ln, ln2,
 
 def update(frame):
-    print(f"Frame {frame}/{len(data['channel_1'])-1}       ", flush=True, end="\r")
+    print(f"Frame {frame+1}/{len(data['channel_1'])}       ", flush=True, end="\r")
     xdata, ydata = data["freqs"], data["channel_1"][frame]["spectrum"]
       
     if not args.t:
@@ -134,7 +133,7 @@ def update(frame):
     ln2.set_data(xdata, [ -y for y in ydata])
     return ln, ln2,
 
-ani = FuncAnimation(fig, update, frames=np.arange(0, len(data["channel_1"])-1), init_func=init, blit=True)
+ani = FuncAnimation(fig, update, frames=range(0, len(data["channel_1"])-1), init_func=init, blit=True)
 ani.save(f"spectrum_{args.audio[:-4]}.mp4", fps=fps, dpi=dpi)  # output name, dpi, framerate etc. Framerate depends on how you spliced the audio
 
 if args.audio[-3:] == "wav":  # convert wav audio file to mp3
