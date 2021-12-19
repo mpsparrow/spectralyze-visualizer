@@ -57,46 +57,44 @@ ln2, = plt.plot([], [], color=lineColor)
 with open(args.json) as file:
     data = json.load(file)
 
-def axisRange():  # tries to determine a good x and y axis range
-    xMaxSet = set()
-    yMaxSet = set()
+def maxMag(): # get the max magnitude estimate
+    mag = 0
 
-    for frame in range(0, len(data["channel_1"])):
+    for frame in range(0, len(data["channel_1"])-1):
         for sample in data["channel_1"][frame]["spectrum"]:
-            yMaxSet.add(sample["mag"])
+            if abs(sample) > mag:
+                mag = abs(sample)
 
-    yMaxMax = max(yMaxSet)
+    return mag*1.1
 
-    for frame in range(0, len(data["channel_1"])):
-        for sample in data["channel_1"][frame]["spectrum"]:
-            if sample["mag"] > yMaxMax*0.05: # exclude anything below the 5% percentile of the average mag
-                xMaxSet.add(sample["freq"])
+def maxFreq(): # get the max frequency estimate
+    freq = 0
+    mag = maxMag()
 
-    xMaxMax = max(xMaxSet)
+    for frame in range(0, len(data["channel_1"])-1):
+        for sample in range(len(data["freqs"])):
+            if abs(data["channel_1"][frame]["spectrum"][sample]) > mag*0.15: # exclude anything below the 5% percentile of the average mag
+                if data["freqs"][sample] > freq:
+                    freq = data["freqs"][sample]
 
-    if args.y is None:
-        yMin = yMaxMax*-1.1
-        yMax = yMaxMax*1.1
-    else:
-        yMin = args.y[0]
-        yMax = args.y[1]
-
-    if args.x is None:
-        xMin = xMaxMax*-0.01
-        xMax = xMaxMax*1.01
-    else:
-        xMin = args.x[0]
-        xMax = args.x[1]
-
-    return [xMin, xMax, yMin, yMax]
+    return freq*1.01
 
 def init():
-    xyRange = axisRange()
+    if args.x is None:
+        freq = maxFreq()
+        ax.set_xlim(0, freq)
+        print(f"freq: {0}, {freq}")
+    else:
+        ax.set_xlim(args.x[0], args.x[1])
+        print(f"freq: {args.x[0]}, {args.x[1]}")
 
-    print(xyRange[0], xyRange[1])
-    print(xyRange[2], xyRange[3])
-    ax.set_xlim(xyRange[0], xyRange[1])
-    ax.set_ylim(xyRange[2], xyRange[3])
+    if args.y is None:
+        mag = maxMag()
+        ax.set_ylim(mag*-1, mag)
+        print(f"mag: {mag*-1}, {mag}")
+    else:
+        ax.set_ylim(args.y[0], args.y[1])
+        print(f"mag: {args.y[0]}, {args.y[1]}")
 
     if args.l:
         ax.set_xlabel("Frequency [Hz]")
@@ -126,11 +124,8 @@ def init():
     return ln, ln2,
 
 def update(frame):
-    print(f"Frame {frame}/{len(data['channel_1'])}       ", flush=True, end="\r")
-    xdata, ydata = [], []
-    for sample in data["channel_1"][frame]["spectrum"]:
-        xdata.append(sample["freq"])
-        ydata.append(sample["mag"])
+    print(f"Frame {frame}/{len(data['channel_1'])-1}       ", flush=True, end="\r")
+    xdata, ydata = data["freqs"], data["channel_1"][frame]["spectrum"]
       
     if not args.t:
       ax.set_title(f"Sample {data['channel_1'][frame]['begin']}")
@@ -139,7 +134,7 @@ def update(frame):
     ln2.set_data(xdata, [ -y for y in ydata])
     return ln, ln2,
 
-ani = FuncAnimation(fig, update, frames=np.arange(0, len(data["channel_1"])), init_func=init, blit=True)
+ani = FuncAnimation(fig, update, frames=np.arange(0, len(data["channel_1"])-1), init_func=init, blit=True)
 ani.save(f"spectrum_{args.audio[:-4]}.mp4", fps=fps, dpi=dpi)  # output name, dpi, framerate etc. Framerate depends on how you spliced the audio
 
 if args.audio[-3:] == "wav":  # convert wav audio file to mp3
