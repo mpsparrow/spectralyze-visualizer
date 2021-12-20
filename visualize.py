@@ -2,7 +2,7 @@
 VISUALIZER COMMANDS
 
 python visualize.py file.json file.mp3 -d 100 -f 20 -w -t -l -b
-python visualize.py Tetris.json Tetris.mp3 -d 300 -f 20 -x 0 1000 -y -1.01 1.01 -w -n -t -l -b -c purple
+python visualize.py Tetris.json Tetris.mp3 -d 300 -f 20 -x 0 1000 -y -1.01 1.01 -w -n 0.25 -t -l -b -c purple
 
 SPECTRALYZE COMMANDS
 
