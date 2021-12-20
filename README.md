@@ -60,6 +60,12 @@ python visualize.py Tetris.json Tetris.mp3 -d 300 -f 20 -x 0 1000 -y -1.01 1.01 
 ```
 https://user-images.githubusercontent.com/6476699/146701756-f725f36c-20bc-4055-a501-b29e30333adf.mp4
 
+```
+python visualize.py Tetris.json Tetris.mp3 -d 300 -f 20 -x 0 1000 -w -t -l -b -c purple
+```
+https://user-images.githubusercontent.com/6476699/146705851-4bd56d7a-384b-4af4-a87f-0fb32dd24bef.mp4
+
+
 (don't have the command for the one below)
 
 https://user-images.githubusercontent.com/6476699/146703506-d7e26dc5-2ad1-4552-bf99-bb67f007e8d8.mp4
