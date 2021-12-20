@@ -69,3 +69,8 @@ https://user-images.githubusercontent.com/6476699/146705851-4bd56d7a-384b-4af4-a
 (don't have the command for the one below)
 
 https://user-images.githubusercontent.com/6476699/146703506-d7e26dc5-2ad1-4552-bf99-bb67f007e8d8.mp4
+
+
+### Credits
+[mpsparrow](https://github.com/mpsparrow)
+[Lauchmelder23](https://github.com/Lauchmelder23)
