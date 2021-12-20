@@ -1,13 +1,22 @@
 """
+VISUALIZER COMMANDS
+
+python visualize.py file.json file.mp3 -d 100 -f 20 -w -t -l -b
+python visualize.py Tetris.json Tetris.mp3 -d 300 -f 20 -x 0 1000 -y -1.01 1.01 -w -n -t -l -b -c purple
+
+SPECTRALYZE COMMANDS
+
+spectralyze.exe -i 50 -p 3 file.wav
+spectralyze.exe -i 50 file.wav
+
 FFMPEG COMMANDS
 
 MP3 -> WAV:         ffmpeg -i input.mp3 output.wav
 WAV -> MP3:         ffmpeg -i input.wav -vn -ar 44100 -ac 2 -b:a 192k output.mp3
 Combine MP4 + MP3:  ffmpeg -i video.mp4 -i audio.mp3 -map 0:v -map 1:a -c:v copy -c:a copy output.mp4 -y
-
-There are some adjustable parameters in this script
 """
 
+import math
 import json
 import argparse
 import subprocess as sp
@@ -21,16 +30,17 @@ parser.add_argument("-x", help="x-axis range (default auto)", type=float, nargs=
 parser.add_argument("-y", help="y-axis range (default auto)", type=float, nargs=2, metavar=('min', 'max'))
 parser.add_argument("-d", help="DPI of the output video (default 100)", type=int, nargs=1, metavar="dpi")
 parser.add_argument("-w", help="Changes ratio to 16:9 (default 4:3)", default=False, action="store_true")
-parser.add_argument("-f", help="FPS of the output video (default 20)", type=int, nargs=1, metavar="fps")
+parser.add_argument("-f", help="FPS of the output video (default 20) (FPS * spectralyze intervals (-i) = 1000)", type=int, nargs=1, metavar="fps")
 parser.add_argument("-t", help="Hides plot title", default=False, action="store_true")
 parser.add_argument("-l", help="Hides plot labels", default=True, action="store_false")
 parser.add_argument("-b", help="Hides borders and ticks", default=False, action="store_true")
-parser.add_argument("-log", help="y-axis log scale", default=False, action="store_true")
 parser.add_argument("-c", help="Color of plot lines (default dependant on theme)", type=str, nargs=1, metavar="color")
 parser.add_argument("-th", help="Graph theme (default dark)", type=str, nargs=1, metavar="dark/light")
+parser.add_argument("-n", help="Attempts to remove low, messy magnitudes for a cleaner noise floor with more defined notes (highly experimental)", type=float, nargs=1, metavar="float")
 args = parser.parse_args()
 
 dpi = 100 # DPI
+
 if args.d is not None:
     dpi = args.d[0]
 
@@ -117,22 +127,30 @@ def init():
         ax.xaxis.label.set_color("white")
         ax.yaxis.label.set_color("white")
 
-    if args.log:
-        ax.set_xscale('log', base=2)
-
     return ln, ln2,
 
 def update(frame):
-    print(f"Frame {frame+1}/{len(data['channel_1'])}       ", flush=True, end="\r")
-    xdata, ydata = data["freqs"], data["channel_1"][frame]["spectrum"]
-      
+    print(f"Frame {frame+1}/{len(data['channel_1'])-1}       ", flush=True, end="\r")
+
     if not args.t:
       ax.set_title(f"Sample {data['channel_1'][frame]['begin']}")
 
-    ln.set_data(xdata, ydata)
-    ln2.set_data(xdata, [ -y for y in ydata])
+    if args.n is not None:
+        #xdata, ydata = data["freqs"], [ele*0.2 if abs(ele) < finalMag*0.1 else ele for ele in data["channel_1"][frame]["spectrum"]]
+        smoothV = args.n[0]
+        xdata, ydata = data["freqs"], [((-smoothV*finalMag)/ele+(smoothV*finalMag))+1 if ele != 0 else ele for ele in [0 if abs(ele) < finalMag*smoothV else ele for ele in data["channel_1"][frame]["spectrum"]]]
+        ln.set_data(xdata, [ -y for y in ydata])
+        ln2.set_data(xdata, ydata)
+    else:
+        #xdata, ydata = data["freqs"], [20*math.log(ele) if ele != 0 else ele for ele in data["channel_1"][frame]["spectrum"]]
+        #xdata, ydata = data["freqs"], [1/(math.log(ele)+1) if ele != 0 else ele for ele in data["channel_1"][frame]["spectrum"]]
+        xdata, ydata = data["freqs"], data["channel_1"][frame]["spectrum"]
+        ln.set_data(xdata, ydata)
+        ln2.set_data(xdata, [ -y for y in ydata])
+
     return ln, ln2,
 
+finalMag = maxMag()
 ani = FuncAnimation(fig, update, frames=range(0, len(data["channel_1"])-1), init_func=init, blit=True)
 ani.save(f"spectrum_{args.audio[:-4]}.mp4", fps=fps, dpi=dpi)  # output name, dpi, framerate etc. Framerate depends on how you spliced the audio
 
