@@ -7,7 +7,7 @@ Install matplotlib and ffmpeg. Put `ffmpeg.exe` in same folder as `visualize.py`
 For best results, use the [spectralyze](https://github.com/Lauchmelder23/spectralyze) file for Windows available in the [most recent release](https://github.com/mpsparrow/spectralyze-visualizer/releases/latest) in this repository.
 
 ## Usage
-Most flags are experimental and may result in a less than ideal end results.
+Most flags are experimental and may result in a less than ideal end result.
 
 Use `python visualizer.py -h` for more up to date information.
 ```
