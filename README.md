@@ -36,7 +36,7 @@ optional arguments:
   -n              Attempts to remove low, messy magnitudes for a cleaner noise floor (highly experimental)
 ```
 
-Match the `-f` FPS in visualizer with the `-i` interval flag in spectralyze so that FPS * interval = 1000ms (i.e. 20FPS * 50 = 1000). Failure to do this will result in unsynced graphs.
+Match the `-f` FPS in visualizer with the `-i` interval flag in spectralyze so that `FPS * interval = 1000ms` (i.e. `20FPS * 50 = 1000`). Failure to do so will result in unsynced audio and video.
 
 ## Examples
 
