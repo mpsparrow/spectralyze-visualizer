@@ -33,7 +33,7 @@ optional arguments:
   -b              Hides borders and ticks
   -c color        Color of plot lines (default dependant on theme)
   -th dark/light  Graph theme (default dark)
-  -n              Attempts to remove low, messy magnitudes for a cleaner noise floor (highly experimental)
+  -n float        Attempts to remove low, messy magnitudes for a cleaner noise floor (highly experimental)
 ```
 
 Match the `-f` FPS in visualizer with the `-i` interval flag in spectralyze so that `FPS * interval = 1000ms` (i.e. `20FPS * 50 = 1000`). Failure to do so will result in unsynced audio and video.
@@ -56,7 +56,7 @@ spectralyze.exe -i 50 file.wav
 
 ## Finished results
 ```
-python visualize.py Tetris.json Tetris.mp3 -d 300 -f 20 -x 0 1000 -y -1.01 1.01 -w -n -t -l -b -c purple
+python visualize.py Tetris.json Tetris.mp3 -d 300 -f 20 -x 0 1000 -y -1.01 1.01 -n 0.25 -c purple -w -t -l -b
 ```
 https://user-images.githubusercontent.com/6476699/146701756-f725f36c-20bc-4055-a501-b29e30333adf.mp4
 
