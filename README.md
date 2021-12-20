@@ -33,7 +33,7 @@ optional arguments:
   -b              Hides borders and ticks
   -c color        Color of plot lines (default dependant on theme)
   -th dark/light  Graph theme (default dark)
-  -n float        Attempts to remove low, messy magnitudes for a cleaner noise floor (highly experimental)
+  -n float        Attempts to remove low, messy magnitudes for a cleaner noise floor with more defined notes (highly experimental)
 ```
 
 Match the `-f` FPS in visualizer with the `-i` interval flag in spectralyze so that `FPS * interval = 1000ms` (i.e. `20FPS * 50 = 1000`). Failure to do so will result in unsynced audio and video.
