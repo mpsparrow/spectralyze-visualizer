@@ -27,7 +27,7 @@ optional arguments:
   -y min max      y-axis range (default auto)
   -d dpi          DPI of the output video (default 100)
   -w              Changes ratio to 16:9 (default 4:3)
-  -f fps          FPS of the output video (default 20) (FPS * spectralyze intervals (-i) = 1000)
+  -f fps          FPS of the output video (default 20) (1000ms / spectralyze intervals (-i) = FPS (-f))
   -t              Hides plot title
   -l              Hides plot labels
   -b              Hides borders and ticks
@@ -36,7 +36,7 @@ optional arguments:
   -n float        Attempts to remove low, messy magnitudes for a cleaner noise floor with more defined notes (highly experimental)
 ```
 
-Match the `-f` FPS in visualizer with the `-i` interval flag in spectralyze so that `FPS * interval = 1000ms` (i.e. `20FPS * 50 = 1000`). Failure to do so will result in unsynced audio and video.
+Match the `-f` FPS in visualizer with the `-i` interval flag in spectralyze so that `1000ms / interval = FPS` (i.e. `1000/50 = 20 FPS`). Failure to do so will result in unsynced audio and video.
 
 ## Examples
 
