@@ -2,7 +2,9 @@
 Graphical visualizer for [spectralyze](https://github.com/Lauchmelder23/spectralyze) by [Lauchmelder23](https://github.com/Lauchmelder23)
 
 ## Install
-Install matplotlib and ffmpeg. Put `ffmpeg.exe` in same folder as `visualize.py` for Windows installations.
+`pip install -r requirements.txt`
+
+Download ffmpeg. Put `ffmpeg.exe` in same folder as `visualize.py` for Windows installations.
 
 For best results, use the [spectralyze](https://github.com/Lauchmelder23/spectralyze) file for Windows available in the [most recent release](https://github.com/mpsparrow/spectralyze-visualizer/releases/latest) in this repository.
 
